@@ -1,0 +1,13 @@
+/* 地図キャンパス */
+#map_container {
+	position: relative;
+	padding-top: 50%;
+  width: 80%;
+  margin: 0 auto;
+}
+#map {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+}

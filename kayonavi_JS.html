@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>かよなび</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- スタイルシートの読み込み -->
+    <link href="./map.css" rel="stylesheet">
+    <!-- Google Mapsライブラリの読み込み -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
+
+</head>
+
+<body>
+    <h1>ぐるなびスタジアム</h1>
+    <form id="my-form">
+        <div class="form-group">
+            <label for="exampleSelect1">今日はなんか食べてから行かん？今日はなんか食べて帰らん？</label>
+            <select class="form-control" id="exampleSelect1" name="my-select">
+            <option value="" selected>スタジアムを選んでください.</option>
+            <option value="0">札幌ドーム</option>
+            <option value="1">ユアテックスタジアム仙台</option>
+            <option value="2">鹿島スタジアム</option>
+            <option value="3">埼玉スタジアム2002</option>
+            <option value="4">NACK5スタジアム大宮</option>
+            <option value="5">日立柏サッカー場</option>
+            <option value="6">味の素スタジアム</option>
+            <option value="7">等々力陸上競技場</option>
+            <option value="8">日産スタジアム</option>
+            <option value="9">山梨中銀スタジアム</option>
+            <option value="10">デンカビッグスワンスタジアム</option>
+            <option value="11">ＩＡＩスタジアム日本平</option>
+            <option value="12">ヤマハスタジアム</option>
+            <option value="13">市立吹田サッカースタジアム</option>
+            <option value="14">キンチョウスタジアム</option>
+            <option value="15">ノエビアスタジアム神戸</option>
+            <option value="16">エディオンスタジアム広島</option>
+            <option value="17">ベストアメニティスタジアム</option>
+            </select>
+            
+            <label class="radio-inline">
+            <input type="radio" name="optradio" value="0" checked>List
+            </label>
+            <label class="radio-inline">
+            <input type="radio" name="optradio" value="1">Map
+            </label>
+        </div>
+        
+        <button type="button" class="js--apply btn btn-primary">検索</button>
+    </form>
+
+
+    <!-- 地図が描画されるキャンパス -->
+    <div id="map_container">
+        <div id="map"></div>
+    </div>
+    <!-- リストを表示する -->
+    <div id="list">
+        <div>
+            <h2 id="error-code"></h2>
+            <p id="error-message"></p>
+        </div>
+        <table class="table table-striped" id="table_id">
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script>
+        (
+            function() {
+                var url = 'http://api.gnavi.co.jp/RestSearchAPI/20150630/?callback=?';
+                var params = {
+                    keyid: '',
+                    format: 'json',
+                    latitude: 0,
+                    longitude: 0,
+                    range: 3,
+                    hit_per_page: 30
+                };
+
+                var showResult = function(result) {
+                    if (result.total_hit_count > 0) {
+                        //document.getElementById("map_container").style.display = "none";
+                         $('#map_container').hide();
+                        //document.getElementById("list").style.display = "block";
+                        $('#list').show();
+
+                        var table = $('#table_id')[0];
+                        var row = table.rows.length;
+                        for (var m = 0; m < row; m++) {
+                            table.deleteRow(i);
+                        }
+                        var rows = table.insertRow(-1);
+                        
+                        /* var cell0 = rows.insertCell(rows.cells.length);
+                        var cell1 = rows.insertCell(rows.cells.length);
+                        var cell2 = rows.insertCell(rows.cells.length)
+
+                        cell0.innerHTML = "id";
+                        cell1.innerHTML = "name";
+                        cell2.innerHTML = "opentime"; */
+                        var cell0 = $(rows.insertCell(rows.cells.length));
+                        var cell1 = $(rows.insertCell(rows.cells.length));
+                        var cell2 = $(rows.insertCell(rows.cells.length));
+
+                        cell0.html("id");
+                        cell1.html("name");
+                        cell2.html("opentime");
+                        
+                        for (var i in result.rest) {
+                            rows = table.insertRow(-1);
+                            /* cell0 = rows.insertCell(rows.cells.length);
+                            cell1 = rows.insertCell(rows.cells.length);
+                            cell2 = rows.insertCell(rows.cells.length);
+                            
+                             if (JSON.stringify(result.rest[i].image_url.shop_image1) === "{}") {
+                                cell0.innerHTML = '<img class= "img-responsive" src =' +
+                                    "noimage.jpg" +
+                                    '>';
+                            } else {
+                                cell0.innerHTML = '<img class= "img-responsive" src =' +
+                                    result.rest[i].image_url.shop_image1 +
+                                    '>';
+                            }
+                            cell1.innerHTML = '<a href=' +
+                                result.rest[i].url +
+                                '>' +
+                                result.rest[i].name +
+                                '</a>';
+                            if (JSON.stringify(result.rest[i].opentime) === "{}") {
+                                cell2.innerHTML = "";
+                            } else {
+                                cell2.innerHTML = result.rest[i].opentime;
+                            }*/
+                            
+                            cell0 = $(rows.insertCell(rows.cells.length));
+                            cell1 = $(rows.insertCell(rows.cells.length));
+                            cell2 = $(rows.insertCell(rows.cells.length));
+                            if (JSON.stringify(result.rest[i].image_url.shop_image1) === "{}") {
+                                cell0.html('<img class= "img-responsive" src =' +
+                                    "noimage.jpg" +
+                                    '>');
+                            } else {
+                                cell0.html( '<img class= "img-responsive" src =' +
+                                    result.rest[i].image_url.shop_image1 +
+                                    '>');
+                            }
+                            cell1.html('<a href=' +
+                                result.rest[i].url +
+                                '>' +
+                                result.rest[i].name +
+                                '</a>');
+                            if (JSON.stringify(result.rest[i].opentime) === "{}") {
+                                cell2.html("");
+                            } else {
+                                cell2.html(result.rest[i].opentime);
+                            }
+                        }
+                    } else {
+                        var error_code = $('#error-code');
+                        var error_massage = $('#error-massage');
+                        error_code.html(result.error.code);
+                        error_massage.html(result.error.message);
+
+                    }
+                }
+
+                var marker = [];
+                var infoWindow = [];
+                var mapResult = function(result) {
+                    document.getElementById("map_container").style.display = "block";
+                    document.getElementById("list").style.display = "none";
+
+                    // 地図のインスタンスを作成する
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 14.0, // ズーム値
+                        center: new google.maps.LatLng(params.latitude, params.longitude), // 中心の位置座標
+                    });
+
+
+                    for (var i in result.rest) {
+                        // マーカーのインスタンスを作成する
+                        marker[i] = new google.maps.Marker({
+                            map: map, // 地図
+                            position: new google.maps.LatLng(result.rest[i].latitude, result.rest[i].longitude),
+                        });
+
+                        infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+                            content: '<a href=' +
+                                result.rest[i].url +
+                                '>' +
+                                result.rest[i].name +
+                                '</a>'
+                        });
+
+                        markerEvent(i); // マーカーにクリックイベントを追加
+
+                    }
+                    //showResult(result);
+                }
+
+
+
+                function markerEvent(i) {
+                    marker[i].addListener('click', function() {
+                        infoWindow[i].open(map, marker[i]); // 吹き出しの表示
+                    });
+                }
+
+
+                $(document).on('click', '.js--apply', function() {
+                    var val = $('#my-form [name=my-select]').val();
+                    var radioVal = $('input[name=optradio]:checked').val();
+
+                    switch (val) {
+                        case "0":
+                            params.latitude = 43.00830000;
+                            params.longitude = 141.41200000;
+                            break;
+                        case "1":
+                            params.latitude = 38.31909258551478;
+                            params.longitude = 140.8816317849162;
+                            break;
+                        case "2":
+                            params.latitude = 35.9921436;
+                            params.longitude = 140.6363309;
+                            params.range = 5;
+                            break;
+                        case "3":
+                            params.latitude = 35.90280347503514;
+                            params.longitude = 139.7168191089863;
+                            break;
+                        case "4":
+                            params.latitude = 35.91681060;
+                            params.longitude = 139.62971760;
+                            break;
+                        case "5":
+                            params.latitude = 35.84848385;
+                            params.longitude = 139.975168;
+                            break;
+                        case "6":
+                            params.latitude = 35.66416797;
+                            params.longitude = 139.5269375;
+                            break;
+                        case "7":
+                            params.latitude = 35.58553181;
+                            params.longitude = 139.6526977;
+                            break;
+                        case "8":
+                            params.latitude = 35.50998123;
+                            params.longitude = 139.6064171;
+                            break;
+                        case "9":
+                            params.latitude = 35.62199383;
+                            params.longitude = 138.5897159;
+                            break;
+                        case "10":
+                            params.latitude = 37.88210445;
+                            params.longitude = 139.059351;
+                            break;
+                        case "11":
+                            params.latitude = 34.9847699;
+                            params.longitude = 138.4809301;
+                            break;
+                        case "12":
+                            params.latitude = 34.72280060;
+                            params.longitude = 137.87894360;
+                            break;
+                        case "13":
+                            params.latitude = 34.8025629;
+                            params.longitude = 135.5365977808979;
+                            break;
+                        case "14":
+                            params.latitude = 34.61538259;
+                            params.longitude = 135.5166562;
+                            break;
+                        case "15":
+                            params.latitude = 34.65670698;
+                            params.longitude = 135.1689649;
+                            break;
+                        case "16":
+                            params.latitude = 34.4410471;
+                            params.longitude = 132.3947168;
+                            break;
+                        case "17":
+                            params.latitude = 33.37168272;
+                            params.longitude = 130.5202372;
+                            break;
+
+                    }
+
+                    $.getJSON(url, params, function(result) {
+                        if (radioVal == "0") {
+                            showResult(result);
+                        } else {
+                            mapResult(result);
+                        }
+                    });
+
+                });
+
+            })(jQuery);
+
+    </script>
+
+
+
+</body>
+
+</html>
